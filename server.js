@@ -4,6 +4,7 @@ const cors = require("cors");
 const formRoutes = require("./routes/formRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const seoRoutes = require("./routes/seoRoutes"); 
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use("/api", formRoutes);
 app.use("/api", blogRoutes);
 app.use("/api", reviewRoutes);
+app.use("/api/seo", seoRoutes);
 
 // Connect to MongoDB
 mongoose

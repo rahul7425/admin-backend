@@ -39,6 +39,33 @@ const getReviewsByBlog = async (req, res) => {
   }
 };
 
+// Admin replies to a review
+const replyToReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { adminReply } = req.body;
+
+    if (!adminReply) {
+      return res.status(400).json({ error: "Reply message is required" });
+    }
+
+    const review = await Review.findByIdAndUpdate(
+      id,
+      { adminReply },
+      { new: true, runValidators: true }
+    );
+
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Reply added successfully", data: review });
+  } catch (error) {
+    console.error("Error replying to review:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 // Delete a review
 const deleteReview = async (req, res) => {
   try {
@@ -56,4 +83,4 @@ const deleteReview = async (req, res) => {
   }
 };
 
-module.exports = { createReview, getReviewsByBlog, deleteReview };
+module.exports = { createReview, getReviewsByBlog, replyToReview, deleteReview };
