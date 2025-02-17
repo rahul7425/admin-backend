@@ -1,0 +1,39 @@
+# Node modules directory
+node_modules/
+
+# Logs (if applicable)
+logs/
+*.log
+npm-debug.log*
+
+# Environment variables file (never commit sensitive information)
+.env
+
+# MongoDB database files (if you're storing data locally)
+db/
+
+# Build directories (if you're using tools like Webpack, Babel, etc.)
+build/
+dist/
+
+# Temporary files and cache
+.tmp/
+.cache/
+
+# Uploads folder (images/files uploaded by users)
+uploads/
+
+# IDE and editor settings (VSCode, IntelliJ, etc.)
+.vscode/
+.idea/
+
+# OS generated files (macOS, Windows)
+.DS_Store
+Thumbs.db
+
+# package-lock.json (optional)
+# Generally, you should commit this to ensure consistent dependency versions across environments
+# package-lock.json
+
+# Yarn lock file (optional if using Yarn)
+# yarn.lock

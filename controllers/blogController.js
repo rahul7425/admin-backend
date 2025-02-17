@@ -1,15 +1,29 @@
+const multer = require('multer');
+const path = require('path');
 const Blog = require("../models/Blog");
 
-// Create a new blog (now supports categories)
+// Create a new blog (supports image upload)
 const createBlog = async (req, res) => {
   try {
-    const { title, description, content, author, categories, status } = req.body;
+    const { title, description, content, categories, status } = req.body;
 
-    if (!title || !description || !content || !author || !categories || categories.length === 0) {
-      return res.status(400).json({ error: "All fields and at least one category are required" });
+    if (!title || !description || !content || !categories || categories.length === 0 || !status) {
+      return res.status(400).json({ error: "All fields are required" });
     }
 
-    const newBlog = new Blog({ title, description, content, author, categories, status });
+    // Handle image upload (image URL or file path)
+    let imageUrl = req.file ? req.file.path : "";  // Store the uploaded image path (or keep it empty if no image uploaded)
+
+    const newBlog = new Blog({
+      title,
+      description,
+      content,
+      author: 'Admin', // Author is always admin
+      categories,
+      status,
+      image: imageUrl,  // Store the image URL (path)
+    });
+
     await newBlog.save();
 
     res.status(201).json({ success: true, message: "Blog created successfully", data: newBlog });
@@ -19,7 +33,7 @@ const createBlog = async (req, res) => {
   }
 };
 
-// Get all blogs (supports category filter, pagination, search, and status filter)
+// Get all blogs (supports pagination, filtering, and status filtering)
 const getAllBlogs = async (req, res) => {
   try {
     const { page = 1, limit = 10, search = "", status, category } = req.query;
@@ -27,7 +41,7 @@ const getAllBlogs = async (req, res) => {
     const query = {};
 
     if (status) query.status = status;
-    if (category) query.categories = category; // Filter by category
+    if (category) query.categories = category;
 
     if (search) {
       query.$or = [
@@ -73,22 +87,25 @@ const getBlogById = async (req, res) => {
   }
 };
 
-// Update a blog
+// Update an existing blog (supports image update)
 const updateBlog = async (req, res) => {
   try {
-    const { title, description, content, author, categories, status } = req.body;
+    const { title, description, content, categories, status } = req.body;
 
-    const blog = await Blog.findByIdAndUpdate(
-      req.params.id,
-      { title, description, content, author, categories, status },
+    // Handle image update (if new image uploaded)
+    let imageUrl = req.file ? req.file.path : undefined;  // Use the new uploaded image
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      req.params.id,  // Blog ID from URL
+      { title, description, content, categories, status, image: imageUrl },
       { new: true, runValidators: true }
     );
 
-    if (!blog) {
+    if (!updatedBlog) {
       return res.status(404).json({ error: "Blog not found" });
     }
 
-    res.status(200).json({ success: true, message: "Blog updated successfully", data: blog });
+    res.status(200).json({ success: true, message: "Blog updated successfully", data: updatedBlog });
   } catch (error) {
     console.error("Error updating blog:", error);
     res.status(500).json({ error: "Server error" });

@@ -5,8 +5,9 @@ const blogSchema = new mongoose.Schema({
   description: { type: String, required: true },
   content: { type: String, required: true },
   author: { type: String, required: true },
-  categories: [{ type: String, required: true }], // New category field
+  categories: [{ type: String, required: true }],
   status: { type: String, enum: ["draft", "published"], default: "draft" },
+  image: { type: String, required: false },  // Image URL for the blog
   createdAt: { type: Date, default: Date.now }
 });
 
