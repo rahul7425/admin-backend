@@ -1,6 +1,4 @@
-const multer = require('multer');
-const path = require('path');
-const Blog = require("../models/Blog");
+const Blog = require("../models/Blog");  // Correct path to Blog model
 
 // Create a new blog (supports image upload)
 const createBlog = async (req, res) => {
