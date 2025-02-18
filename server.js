@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const formRoutes = require("./routes/formRoutes");
-const blogRoutes = require("./controllers/");
+const blogRoutes = require("./routes/blogRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const seoRoutes = require("./routes/seoRoutes"); 
 
