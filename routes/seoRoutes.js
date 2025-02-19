@@ -3,9 +3,16 @@ const { getSeoData, updateSeoData, addSeoData, deleteSeoData } = require("../con
 
 const router = express.Router();
 
-router.get("/:page", getSeoData); // Get all titles/descriptions for a page
-router.put("/:page/:key", updateSeoData); // Update a specific title/description
-router.post("/:page", addSeoData); // Add a new title/description
-router.delete("/:page/:key", deleteSeoData); // Delete a specific title/description
+// Get SEO Data for a Page (title & description)
+router.get("/:page", getSeoData);  // Example: GET /api/seo/home
+
+// Update SEO Data (title & description)
+router.put("/:page", updateSeoData);  // Example: PUT /api/seo/home
+
+// Add SEO Data (title & description) for a page
+router.post("/:page", addSeoData);  // Example: POST /api/seo/home
+
+// Delete SEO Data for a page
+router.delete("/:page", deleteSeoData);  // Example: DELETE /api/seo/home
 
 module.exports = router;

@@ -4,8 +4,9 @@ const cors = require("cors");
 const formRoutes = require("./routes/formRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
-const seoRoutes = require("./routes/seoRoutes"); 
-
+const seoRoutes = require("./routes/seoRoutes");
+const adminRoutes = require("./routes/adminRoutes"); // Added the admin routes
+const finleads = require("./routes/finunique/finleadsRouter");
 const app = express();
 
 // Middleware
@@ -17,7 +18,8 @@ app.use("/api", formRoutes);
 app.use("/api", blogRoutes);
 app.use("/api", reviewRoutes);
 app.use("/api/seo", seoRoutes);
-
+app.use("/api", adminRoutes); 
+app.use("/api",finleads);
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {

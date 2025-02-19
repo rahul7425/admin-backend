@@ -10,36 +10,42 @@ const getSeoData = async (req, res) => {
       return res.status(404).json({ error: "SEO data not found for this page" });
     }
 
-    res.status(200).json({ success: true, data: seoData.titles });
+    res.status(200).json({
+      success: true,
+      data: {
+        title: seoData.title,
+        description: seoData.description
+      }
+    });
   } catch (error) {
     console.error("Error fetching SEO data:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-// Update a Specific Title & Description
+// Update SEO Data (Title & Description)
 const updateSeoData = async (req, res) => {
   try {
-    const { page, key } = req.params;
+    const { page } = req.params;
     const { title, description } = req.body;
 
-    const seoData = await Seo.findOne({ page });
+    // Find the SEO data for the specific page
+    let seoData = await Seo.findOne({ page });
 
     if (!seoData) {
-      return res.status(404).json({ error: "SEO data not found" });
+      // If no SEO data exists for the page, create new entry
+      seoData = new Seo({
+        page,
+        title,
+        description
+      });
+    } else {
+      // Update the existing SEO data for the page
+      if (title) seoData.title = title;
+      if (description) seoData.description = description;
     }
 
-    // Find the specific section by key
-    const entry = seoData.titles.find(entry => entry.key === key);
-    
-    if (!entry) {
-      return res.status(404).json({ error: "Title key not found" });
-    }
-
-    // Update title & description
-    if (title) entry.title = title;
-    if (description) entry.description = description;
-
+    // Save the updated SEO data to the database
     await seoData.save();
     res.status(200).json({ success: true, message: "SEO data updated successfully" });
   } catch (error) {
@@ -48,22 +54,25 @@ const updateSeoData = async (req, res) => {
   }
 };
 
-// Add a New Title & Description for a Page
+// Add SEO Data (Title & Description for a Page)
 const addSeoData = async (req, res) => {
   try {
     const { page } = req.params;
-    const { key, title, description } = req.body;
+    const { title, description } = req.body;
 
     let seoData = await Seo.findOne({ page });
 
     if (!seoData) {
-      seoData = new Seo({ page, titles: [{ key, title, description }] });
+      // If no SEO data exists for the page, create new entry
+      seoData = new Seo({
+        page,
+        title,
+        description
+      });
     } else {
-      // Prevent duplicate keys
-      if (seoData.titles.some(entry => entry.key === key)) {
-        return res.status(400).json({ error: "Key already exists" });
-      }
-      seoData.titles.push({ key, title, description });
+      // If SEO data exists, update the title and description
+      seoData.title = title;
+      seoData.description = description;
     }
 
     await seoData.save();
@@ -74,10 +83,10 @@ const addSeoData = async (req, res) => {
   }
 };
 
-// Delete a Specific Title & Description
+// Delete SEO Data (Title & Description for a Page)
 const deleteSeoData = async (req, res) => {
   try {
-    const { page, key } = req.params;
+    const { page } = req.params;
 
     const seoData = await Seo.findOne({ page });
 
@@ -85,11 +94,9 @@ const deleteSeoData = async (req, res) => {
       return res.status(404).json({ error: "SEO data not found" });
     }
 
-    // Remove the entry with the matching key
-    seoData.titles = seoData.titles.filter(entry => entry.key !== key);
+    await Seo.deleteOne({ page });  // Remove the SEO data entry for the page
 
-    await seoData.save();
-    res.status(200).json({ success: true, message: "SEO data deleted successfully" });
+  res.status(200).json({ success: true, message: "SEO data deleted successfully" });
   } catch (error) {
     console.error("Error deleting SEO data:", error);
     res.status(500).json({ error: "Server error" });
