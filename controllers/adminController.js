@@ -13,30 +13,24 @@ const loginAdmin = async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    console.log('Received login request:', email, password); // Log received email and password
-
-    // Find the admin by email
-    const admin = await Admin.findOne({ email });
+    // Check if the admin exists in the database
+    let admin = await Admin.findOne({ email });
 
     if (!admin) {
-      return res.status(400).json({ error: "Invalid credentials" });
+      // If admin does not exist, create a new admin
+      admin = new Admin({ email, password });
+      await admin.save(); // Save admin with hashed password
+      return res.status(201).json({ success: true, message: "Admin created and logged in", token: generateToken(admin) });
     }
-
-    // Log the hashed password from the database for debugging
-    console.log('Stored password in DB:', admin.password);
 
     // Check if the password is correct
     const isMatch = await bcrypt.compare(password, admin.password);
-    console.log('Password match result:', isMatch); // Log the result of the comparison
-
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
     // Generate the JWT with the admin's ID and the secret from the environment variable
-    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h", // Set expiration time for the token
-    });
+    const token = generateToken(admin);
 
     // Send the token in response
     res.status(200).json({
@@ -48,6 +42,13 @@ const loginAdmin = async (req, res) => {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Server error" });
   }
+};
+
+// Helper function to generate JWT token
+const generateToken = (admin) => {
+  return jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
+    expiresIn: "1h", // Set expiration time for the token
+  });
 };
 
 module.exports = { loginAdmin };
