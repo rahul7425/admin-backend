@@ -13,6 +13,8 @@ const loginAdmin = async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
+    console.log('Received login request:', email, password); // Log received email and password
+
     // Find the admin by email
     const admin = await Admin.findOne({ email });
 
@@ -20,8 +22,13 @@ const loginAdmin = async (req, res) => {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
+    // Log the hashed password from the database for debugging
+    console.log('Stored password in DB:', admin.password);
+
     // Check if the password is correct
     const isMatch = await bcrypt.compare(password, admin.password);
+    console.log('Password match result:', isMatch); // Log the result of the comparison
+
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
