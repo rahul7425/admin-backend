@@ -7,7 +7,7 @@ const createBlog = async (req, res) => {
 
     if (!title || !description || !content || !categories || categories.length === 0 || !status) {
       return res.status(400).json({ error: "All fields are required" });
-    }
+    } 
 
     // Handle image upload (image URL or file path)
     let imageUrl = req.file ? req.file.path : "";  // Store the uploaded image path (or keep it empty if no image uploaded)
