@@ -2,11 +2,12 @@ const mongoose = require("mongoose");
 
 const reviewSchema = new mongoose.Schema({
   blogId: { type: mongoose.Schema.Types.ObjectId, ref: "Blog", required: true },
-  userName: { type: String, required: true },
-  rating: { type: Number, required: true, min: 1, max: 5 },
-  comment: { type: String, required: true },
-  adminReply: { type: String, default: "" }, // New field for admin reply
-  createdAt: { type: Date, default: Date.now }
+  name: { type: String, required: true },       // Name of the person submitting the review
+  email: { type: String, required: true },      // Email of the person
+  phone: { type: String, required: true },      // Phone number of the person
+  msg: { type: String, required: true },        // The message or comment from the user
+  adminReply: { type: String, default: "" },    // Admin's reply to the review
+  createdAt: { type: Date, default: Date.now }  // Automatically set to the current date
 });
 
 const Review = mongoose.model("Review", reviewSchema);

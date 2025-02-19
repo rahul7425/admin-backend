@@ -4,9 +4,9 @@ const Blog = require("../models/Blog");
 // Create a review
 const createReview = async (req, res) => {
   try {
-    const { blogId, userName, rating, comment } = req.body;
+    const { blogId, name, email, phone, msg } = req.body;
 
-    if (!blogId || !userName || !rating || !comment) {
+    if (!blogId || !name || !email || !phone || !msg) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -16,7 +16,10 @@ const createReview = async (req, res) => {
       return res.status(404).json({ error: "Blog not found" });
     }
 
-    const newReview = new Review({ blogId, userName, rating, comment });
+    // Create a new review with the provided data
+    const newReview = new Review({ blogId, name, email, phone, msg });
+
+    // Save the review to the database
     await newReview.save();
 
     res.status(201).json({ success: true, message: "Review added successfully", data: newReview });
