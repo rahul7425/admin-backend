@@ -4,7 +4,7 @@ const Blog = require("../models/Blog");
 // Create a review
 const createReview = async (req, res) => {
   try {
-    const { blogId, name, email, phone, msg } = req.body;
+    const { blogId,name, email, phone, msg } = req.body;
 
     if (!blogId || !name || !email || !phone || !msg) {
       return res.status(400).json({ error: "All fields are required" });
