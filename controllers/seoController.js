@@ -1,5 +1,5 @@
 const Seo = require("../models/SEO");
- 
+
 // Update SEO Data (Title & Description)
 const updateSeoData = async (req, res) => {
   try {
@@ -26,4 +26,24 @@ const updateSeoData = async (req, res) => {
   }
 };
 
-module.exports = { updateSeoData };
+// Get SEO Data for a specific page
+const getSeoData = async (req, res) => {
+  try {
+    const { page } = req.params;
+
+    // Find the SEO data for the specific page
+    const seoData = await Seo.findOne({ page });
+
+    if (!seoData) {
+      return res.status(404).json({ error: "SEO data not found for this page" });
+    }
+
+    // Return the SEO data
+    res.status(200).json(seoData);
+  } catch (error) {
+    console.error("Error fetching SEO data:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = { updateSeoData, getSeoData };
