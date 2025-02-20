@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
-require("dotenv").config();  // Load environment variables
+require("dotenv").config(); // Load environment variables
 
 // Admin login API
 const loginAdmin = async (req, res) => {
@@ -22,6 +22,12 @@ const loginAdmin = async (req, res) => {
     // Directly compare passwords (plain text)
     if (admin.password !== password) {
       return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    // Check if JWT_SECRET is available
+    if (!process.env.JWT_SECRET) {
+      console.error("❌ JWT_SECRET is missing!");
+      return res.status(500).json({ error: "Server error: JWT secret missing" });
     }
 
     // Generate JWT token
