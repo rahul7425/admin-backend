@@ -1,5 +1,35 @@
 const Seo = require("../models/SEO");
 
+// Add new SEO Data for a specific page
+const addSeoData = async (req, res) => {
+  try {
+    const { page, title, description } = req.body;
+
+    // Check if all fields are provided
+    if (!page || !title || !description) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Check if SEO data for this page already exists
+    const existingSeo = await Seo.findOne({ page });
+
+    if (existingSeo) {
+      return res.status(400).json({ error: "SEO data already exists for this page" });
+    }
+
+    // Create new SEO entry
+    const seoData = new Seo({ page, title, description });
+
+    // Save to database
+    await seoData.save();
+
+    res.status(201).json({ success: true, message: "SEO data added successfully", data: seoData });
+  } catch (error) {
+    console.error("Error adding SEO data:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 // Update SEO Data (Title & Description)
 const updateSeoData = async (req, res) => {
   try {
@@ -46,4 +76,4 @@ const getSeoData = async (req, res) => {
   }
 };
 
-module.exports = { updateSeoData, getSeoData };
+module.exports = { addSeoData, updateSeoData, getSeoData };
