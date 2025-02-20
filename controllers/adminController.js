@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
-const bcrypt = require("bcrypt");
-require("dotenv").config();  // Load environment variables from .env file
+require("dotenv").config();  // Load environment variables
 
 // Admin login API
 const loginAdmin = async (req, res) => {
@@ -17,22 +16,20 @@ const loginAdmin = async (req, res) => {
     let admin = await Admin.findOne({ email });
 
     if (!admin) {
-      // If admin does not exist, create a new admin
-      admin = new Admin({ email, password });
-      await admin.save(); // Save admin with hashed password
-      return res.status(201).json({ success: true, message: "Admin created and logged in", token: generateToken(admin) });
-    }
-
-    // Check if the password is correct
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // Generate the JWT with the admin's ID and the secret from the environment variable
-    const token = generateToken(admin);
+    // Directly compare passwords (plain text)
+    if (admin.password !== password) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
 
-    // Send the token in response
+    // Generate JWT token
+    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    // Send response
     res.status(200).json({
       success: true,
       message: "Login successful",
@@ -42,13 +39,6 @@ const loginAdmin = async (req, res) => {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Server error" });
   }
-};
-
-// Helper function to generate JWT token
-const generateToken = (admin) => {
-  return jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h", // Set expiration time for the token
-  });
 };
 
 module.exports = { loginAdmin };
