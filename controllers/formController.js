@@ -15,7 +15,7 @@ const submitForm = async (req, res) => {
         await newForm.save();
 
         // Send Email to Office
-        await sendEmail({ fullName, email, number, message });
+        await sendEmail({ fullName, email, number, message }); 
 
         res.status(201).json({ success: true, message: "Form submitted successfully" });
     } catch (error) {
